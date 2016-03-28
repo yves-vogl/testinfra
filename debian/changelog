@@ -1,3 +1,27 @@
+testinfra (1.1.0-1) unstable; urgency=medium
+
+  [ Philippe Pepiot ]
+  * packaging: Development Status 5 - Production / Stable
+  * Fix tests on travis
+  * pytest: Use addoption instead of _addoption
+  * Fix pylint protected-access
+  * Tests: upgrade to vagrant 1.8
+  * SystemInfo: Fix os detection on Centos/RHEL 6
+  * Paramiko: Handle closed session
+  * Tests with docker-compose
+  * tests: fix fedora ssh test
+  * tests: travis pull testinfra:fedora
+
+  [ Simon Aquino ]
+  * Return puppet facts when calling Facter
+
+  [ Philippe Pepiot ]
+  * Use TestinfraBackend and hide _testinfra_backend
+  * Module scope is function
+  * doc: powerful docker example
+
+ -- Philippe Pepiot <phil@philpep.org>  Mon, 28 Mar 2016 13:32:01 +0200
+
 testinfra (1.0.0-1) unstable; urgency=low
 
   * Initial debianization
