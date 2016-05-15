@@ -1,3 +1,15 @@
+testinfra (1.2.0-1) unstable; urgency=medium
+
+  * Backend: Fix quoting with sudo
+  * ansible: Fix v1 error handling
+  * Ansible: Add helper to get ansible variables
+  * Fix package version for packages on hold in dpkg (#92)
+  * New supervisor module
+  * User: add a method for checking user password
+  * New MountPoint module
+
+ -- Philippe Pepiot <phil@philpep.org>  Sun, 15 May 2016 15:27:35 +0200
+
 testinfra (1.1.0-1) unstable; urgency=medium
 
   [ Philippe Pepiot ]
