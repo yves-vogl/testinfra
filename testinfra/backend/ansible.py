@@ -1,6 +1,4 @@
-# -*- coding: utf8 -*-
-# Copyright © 2015-2016 Philippe Pepiot
-#
+# coding: utf-8
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -58,6 +56,10 @@ class AnsibleBackend(base.BaseBackend):
             self.host, module_name, module_args,
             host_list=self.ansible_inventory,
             **kwargs)
+
+    def get_variables(self):
+        return ansible_runner.get_variables(
+            self.host, host_list=self.ansible_inventory)
 
     @classmethod
     def get_hosts(cls, host, **kwargs):

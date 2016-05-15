@@ -1,6 +1,4 @@
-# -*- coding: utf8 -*-
-# Copyright © 2015 Philippe Pepiot
-#
+# coding: utf-8
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -136,9 +134,10 @@ class BaseBackend(object):
             return command
 
     def get_command(self, command, *args):
+        command = self.quote(command, *args)
         if self.sudo:
             command = self.quote("sudo /bin/sh -c %s", command)
-        return self.quote(command, *args)
+        return command
 
     def run(self, command, *args, **kwargs):
         raise NotImplementedError

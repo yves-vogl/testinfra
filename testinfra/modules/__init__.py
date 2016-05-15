@@ -1,6 +1,4 @@
-# -*- coding: utf8 -*-
-# Copyright © 2015 Philippe Pepiot
-#
+# coding: utf-8
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -20,6 +18,7 @@ from testinfra.modules.command import Command
 from testinfra.modules.file import File
 from testinfra.modules.group import Group
 from testinfra.modules.interface import Interface
+from testinfra.modules.mountpoint import MountPoint
 from testinfra.modules.package import Package
 from testinfra.modules.process import Process
 from testinfra.modules.puppet import Facter
@@ -27,6 +26,7 @@ from testinfra.modules.puppet import PuppetResource
 from testinfra.modules.salt import Salt
 from testinfra.modules.service import Service
 from testinfra.modules.socket import Socket
+from testinfra.modules.supervisor import Supervisor
 from testinfra.modules.sysctl import Sysctl
 from testinfra.modules.systeminfo import SystemInfo
 from testinfra.modules.user import User
@@ -36,4 +36,5 @@ __all__ = [
     "Command", "File", "Package", "Group", "Interface",
     "Service", "SystemInfo", "User", "Salt", "PuppetResource",
     "Facter", "Sysctl", "Socket", "Ansible", "Process",
+    "Supervisor", "MountPoint",
 ]

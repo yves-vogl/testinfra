@@ -1,6 +1,4 @@
-# -*- coding: utf8 -*-
-# Copyright © 2015 Philippe Pepiot
-#
+# coding: utf-8
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -38,9 +36,11 @@ Sysctl = modules.Sysctl.as_fixture()
 Socket = modules.Socket.as_fixture()
 Ansible = modules.Ansible.as_fixture()
 Process = modules.Process.as_fixture()
+Supervisor = modules.Supervisor.as_fixture()
+MountPoint = modules.MountPoint.as_fixture()
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def LocalCommand(TestinfraBackend):
     """Run commands locally
 
@@ -121,6 +121,6 @@ def pytest_generate_tests(metafunc):
 
 
 def pytest_configure(config):
-    if config.option.verbose > 0:
+    if config.option.verbose > 1:
         logging.basicConfig()
         logging.getLogger("testinfra").setLevel(logging.DEBUG)

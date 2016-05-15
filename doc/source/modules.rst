@@ -87,6 +87,13 @@ Service
    :members:
 
 
+Supervisor
+~~~~~~~~~~
+
+.. autoclass:: testinfra.modules.Supervisor
+   :members:
+
+
 Socket
 ~~~~~~
 
@@ -113,6 +120,7 @@ Ansible
 ~~~~~~~
 
 .. autoclass:: testinfra.modules.Ansible(module_name, module_args=None, check=True)
+   :members:
 
 
 PuppetResource
@@ -134,6 +142,13 @@ Sysctl
 ~~~~~~
 
 .. autoclass:: testinfra.modules.Sysctl(name)
+   :members:
+
+
+MountPoint
+~~~~~~~~~~
+
+.. autoclass:: testinfra.modules.MountPoint(path)
    :members:
 
 .. _pytest fixtures: https://pytest.org/latest/fixture.html

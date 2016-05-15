@@ -1,6 +1,4 @@
-# -*- coding: utf8 -*-
-# Copyright © 2016 Philippe Pepiot
-#
+# coding: utf-8
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -46,19 +44,25 @@ class AnsibleRunnerBase(object):
     def get_hosts(self, pattern=None):
         raise NotImplementedError
 
+    def get_variables(self, host):
+        raise NotImplementedError
+
     def run(self, module_name, module_args, **kwargs):
         raise NotImplementedError
 
 
 class AnsibleRunnerUnavailable(AnsibleRunnerBase):
+    _unavailable = RuntimeError(
+        "You must install ansible package to use the ansible backend")
 
     def get_hosts(self, pattern=None):
-        raise RuntimeError(
-            "You must install ansible package to use the ansible backend")
+        raise self._unavailable
+
+    def get_variables(self, host):
+        raise self._unavailable
 
     def run(self, host, module_name, module_args, **kwargs):
-        raise RuntimeError(
-            "You must install ansible package to use the ansible backend")
+        raise self._unavailable
 
 
 class AnsibleRunnerV1(AnsibleRunnerBase):
@@ -73,16 +77,22 @@ class AnsibleRunnerV1(AnsibleRunnerBase):
             self.inventory.get_hosts(pattern=pattern or "all")
         ]
 
+    def get_variables(self, host):
+        return self.inventory.get_variables(host)
+
     def run(self, host, module_name, module_args=None, **kwargs):
         kwargs = kwargs.copy()
         if self.host_list is not None:
             kwargs["host_list"] = self.host_list
         if module_args is not None:
             kwargs["module_args"] = module_args
-        return ansible.runner.Runner(
+        result = ansible.runner.Runner(
             pattern=host,
             module_name=module_name,
-            **kwargs).run()["contacted"][host]
+            **kwargs).run()
+        if host not in result["contacted"]:
+            raise RuntimeError("Unexpected error: {}".format(result))
+        return result["contacted"][host]
 
 
 class Options(object):
@@ -142,6 +152,9 @@ class AnsibleRunnerV2(AnsibleRunnerBase):
             self.inventory.get_hosts(pattern=pattern or "all")
         ]
 
+    def get_variables(self, host):
+        return self.inventory.get_vars(host)
+
     def run(self, host, module_name, module_args=None, **kwargs):
         action = {"module": module_name}
         if module_args is not None:
@@ -197,3 +210,7 @@ def get_hosts(host_list=None, pattern=None):
 def run(host, module_name, module_args=None, host_list=None, **kwargs):
     return AnsibleRunner(host_list).run(
         host, module_name, module_args, **kwargs)
+
+
+def get_variables(host, host_list=None):
+    return AnsibleRunner(host_list).get_variables(host)

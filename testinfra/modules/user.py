@@ -1,6 +1,4 @@
-# -*- coding: utf8 -*-
-# Copyright © 2015 Philippe Pepiot
-#
+# coding: utf-8
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -76,5 +74,24 @@ class User(Module):
         """Return the user login shell"""
         return self.check_output("getent passwd %s", self.name).split(":")[6]
 
+    @property
+    def password(self):
+        """Return the crypted user password"""
+        return self.check_output("getent shadow %s", self.name).split(":")[1]
+
+    @classmethod
+    def get_module_class(cls, _backend):
+        SystemInfo = _backend.get_module("SystemInfo")
+        if SystemInfo.type.endswith("bsd"):
+            return BSDUser
+        return super(User, cls).get_module_class(_backend)
+
     def __repr__(self):
         return "<user %s>" % (self.name,)
+
+
+class BSDUser(User):
+
+    @property
+    def password(self):
+        return self.check_output("getent passwd %s", self.name).split(":")[1]
