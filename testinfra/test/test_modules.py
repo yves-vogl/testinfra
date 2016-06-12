@@ -13,6 +13,7 @@
 from __future__ import unicode_literals
 
 import crypt
+import datetime
 import re
 import time
 
@@ -185,6 +186,11 @@ def test_user(User):
     assert user.password == "*"
 
 
+def test_user_expiration_date(User):
+    assert User("root").expiration_date is None
+    assert User("user").expiration_date == datetime.datetime(2024, 10, 4, 0, 0)
+
+
 def test_nonexistent_user(User):
     assert not User("zzzzzzzzzz").exists
 
@@ -328,3 +334,21 @@ def test_mountpoint(MountPoint):
     assert mountpoints
     assert all(isinstance(m, MountPoint) for m in mountpoints)
     assert len([m for m in mountpoints if m.path == "/"]) == 1
+
+
+def test_sudo_from_root(Sudo, User):
+    assert User().name == "root"
+    with Sudo("user"):
+        assert User().name == "user"
+    assert User().name == "root"
+
+
+@pytest.mark.testinfra_hosts("docker://user@debian_jessie")
+def test_sudo_to_root(Sudo, User):
+    assert User().name == "user"
+    with Sudo():
+        assert User().name == "root"
+        # Test nested sudo
+        with Sudo("www-data"):
+            assert User().name == "www-data"
+    assert User().name == "user"
