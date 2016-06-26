@@ -1,3 +1,11 @@
+testinfra (1.3.1-1) unstable; urgency=medium
+
+  * Ansible: Fix error reporting when ansible call is skipped
+  * Ansible: better logging in verbose mode
+  * Package: look for dpkg-query to detect apt based systems
+
+ -- Philippe Pepiot <phil@philpep.org>  Sun, 26 Jun 2016 02:27:28 +0200
+
 testinfra (1.3.0-1) unstable; urgency=medium
 
   * backend: Add a --sudo-user option
