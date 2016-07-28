@@ -12,8 +12,8 @@ Build-Depends:
     python3-pbr,
     python-pytest,
     python3-pytest,
-    python-six,
-    python3-six,
+    python-six (>= 1.4.0),
+    python3-six (>= 1.4.0),
     python-sphinx,
     python-alabaster,
 Homepage: https://github.com/philpep/testinfra
@@ -25,7 +25,7 @@ Package: python-testinfra
 Architecture: all
 Depends:
     python-pytest,
-    python-six,
+    python-six (>= 1.4.0),
     ${misc:Depends},
     ${python:Depends}
 Recommends: ${python:Recommends}
@@ -44,7 +44,7 @@ Package: python3-testinfra
 Architecture: all
 Depends:
     python3-pytest,
-    python3-six,
+    python3-six (>= 1.4.0),
     ${misc:Depends},
     ${python3:Depends}
 Recommends: ${python3:Recommends}
