@@ -1,3 +1,12 @@
+testinfra (1.4.3-1) unstable; urgency=medium
+
+  * expand path when using --ssh-config
+  * backend: salt: return hosts in predictable order
+  * Ansible: fix get_variables() for ansible 2
+  * workaround encoding issues in ansible backend
+
+ -- Philippe Pepiot <phil@philpep.org>  Tue, 08 Nov 2016 20:49:35 +0100
+
 testinfra (1.4.1-1) unstable; urgency=medium
 
   * require six >=1.4 for six.moves.urllib
