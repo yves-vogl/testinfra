@@ -1,3 +1,11 @@
+testinfra (1.4.4-1) unstable; urgency=medium
+
+  * backend: implement __getattr__ to get modules
+  * check for presence of commands with command -v
+  * New PipPackage module
+
+ -- Philippe Pepiot <phil@philpep.org>  Thu, 24 Nov 2016 23:49:36 +0100
+
 testinfra (1.4.3-1) unstable; urgency=medium
 
   * expand path when using --ssh-config
