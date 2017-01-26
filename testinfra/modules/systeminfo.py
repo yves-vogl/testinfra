@@ -56,6 +56,7 @@ class SystemInfo(InstanceModule):
                 for key, attname in (
                     ("ID=", "distribution"),
                     ("VERSION_ID=", "release"),
+                    ("VERSION_CODENAME=", "codename"),
                 ):
                     if line.startswith(key):
                         sysinfo[attname] = (
@@ -76,6 +77,22 @@ class SystemInfo(InstanceModule):
 
         return sysinfo
 
+    def _get_darwin_sysinfo(self):
+        sysinfo = {}
+
+        sw_vers = self.run("sw_vers")
+        if sw_vers.rc == 0:
+            for line in sw_vers.stdout.splitlines():
+                key, value = line.split(":", 1)
+                key = key.strip().lower()
+                value = value.strip()
+                if key == "productname":
+                    sysinfo["distribution"] = value
+                elif key == "productversion":
+                    sysinfo["release"] = value
+
+        return sysinfo
+
     def get_system_info(self):
         sysinfo = {
             "type": None,
@@ -86,6 +103,8 @@ class SystemInfo(InstanceModule):
         sysinfo["type"] = self.check_output("uname -s").lower()
         if sysinfo["type"] == "linux":
             sysinfo.update(**self._get_linux_sysinfo())
+        elif sysinfo["type"] == "darwin":
+            sysinfo.update(**self._get_darwin_sysinfo())
         else:
             # BSD
             sysinfo["release"] = self.check_output("uname -r")
