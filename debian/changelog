@@ -1,3 +1,18 @@
+testinfra (1.5.3-1) unstable; urgency=medium
+
+  * Package: adding a release property
+  * Fix example in docstring for user property
+  * Add a kubectl backend.
+  * Command: check_output strip carriage return and newlines (#164)
+  * Package: rpm improve getting version() and release()
+  * User: add gecos (comment) field
+  * [pkg] add dependency on importlib for python 2.6 (#172)
+  * Ansible: Fix empty become_user option
+  * Add sysinfo for macOS
+  * Sudo: restore backend command in case of exceptions
+
+ -- Philippe Pepiot <phil@philpep.org>  Thu, 26 Jan 2017 14:23:20 +0100
+
 testinfra (1.4.4-1) unstable; urgency=medium
 
   * backend: implement __getattr__ to get modules
