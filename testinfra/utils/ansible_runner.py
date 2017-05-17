@@ -16,7 +16,9 @@
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
+import imp
 import pprint
+
 
 try:
     import ansible
@@ -31,7 +33,7 @@ if _ansible_major_version == 1:
     import ansible.runner
     import ansible.utils
 elif _ansible_major_version == 2:
-    import ansible.cli
+    import ansible.cli.playbook
     import ansible.executor.task_queue_manager
     import ansible.inventory
     import ansible.parsing.dataloader
@@ -40,11 +42,19 @@ elif _ansible_major_version == 2:
     import ansible.utils.vars
     import ansible.vars
 
+try:
+    from ansible.module_utils._text import to_bytes
+except ImportError:
+    from ansible.utils.unicode import to_bytes
+
+
+__all__ = ['AnsibleRunner', 'to_bytes']
+
 
 def _reload_constants():
     # Reload defaults that can depend on environment variables and
     # current working directory
-    reload(ansible.constants)
+    imp.reload(ansible.constants)
 
 
 class AnsibleRunnerBase(object):
@@ -59,7 +69,7 @@ class AnsibleRunnerBase(object):
     def get_variables(self, host):
         raise NotImplementedError
 
-    def run(self, module_name, module_args, **kwargs):
+    def run(self, host, module_name, module_args, **kwargs):
         raise NotImplementedError
 
 
@@ -138,8 +148,8 @@ class AnsibleRunnerV2(AnsibleRunnerBase):
         super(AnsibleRunnerV2, self).__init__(host_list)
         _reload_constants()
         self.variable_manager = ansible.vars.VariableManager()
-        self.cli = ansible.cli.CLI(None)
-        self.cli.options = ansible.cli.CLI(None).base_parser(
+        self.cli = ansible.cli.playbook.PlaybookCLI(None)
+        self.cli.options = self.cli.base_parser(
             connect_opts=True,
             meta_opts=True,
             runas_opts=True,
@@ -155,7 +165,7 @@ class AnsibleRunnerV2(AnsibleRunnerBase):
         self.cli.options.connection = "smart"
         self.loader = ansible.parsing.dataloader.DataLoader()
         if self.cli.options.vault_password_file:
-            vault_pass = ansible.cli.CLI.read_vault_password_file(
+            vault_pass = self.cli.read_vault_password_file(
                 self.cli.options.vault_password_file, loader=self.loader)
             self.loader.set_vault_password(vault_pass)
 

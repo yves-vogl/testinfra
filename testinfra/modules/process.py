@@ -55,19 +55,19 @@ class Process(InstanceModule):
     <http://man7.org/linux/man-pages/man1/ps.1.html#STANDARD_FORMAT
     SPECIFIERS>`_.
 
-    >>> master = Process.get(user="root", comm="nginx")
+    >>> master = host.process.get(user="root", comm="nginx")
     # Here is the master nginx process (running as root)
     >>> master.args
     'nginx: master process /usr/sbin/nginx -g daemon on; master_process on;'
     # Here are the worker processes (Parent PID = master PID)
-    >>> workers = Process.filter(ppid=master.pid)
+    >>> workers = host.process.filter(ppid=master.pid)
     >>> len(workers)
     4
     # Nginx don't eat memory
     >>> sum([w.pmem for w in workers])
     0.8
     # But php does !
-    >>> sum([p.pmem for p in Process.filter(comm="php5-fpm")])
+    >>> sum([p.pmem for p in host.process.filter(comm="php5-fpm")])
     19.2
 
     """
@@ -75,7 +75,7 @@ class Process(InstanceModule):
     def filter(self, **filters):
         """Get a list of matching process
 
-        >>> Process.filter(user="root", comm="zsh")
+        >>> host.process.filter(user="root", comm="zsh")
         [<process zsh (pid=2715)>, <process zsh (pid=10502)>, ...]
         """
         match = []
@@ -96,23 +96,22 @@ class Process(InstanceModule):
         matching filters.
         """
         matches = self.filter(**filters)
-        if len(matches) == 0:
+        if not matches:
             raise RuntimeError("No process found")
         elif len(matches) > 1:
             raise RuntimeError("Multiple process found: %s" % (matches,))
-        else:
-            return matches[0]
+        return matches[0]
 
-    def _get_processes(self, *values, **filters):
+    def _get_processes(self, **filters):
         raise NotImplementedError
 
     def _get_process_attribute_by_pid(self, pid, name):
         raise NotImplementedError
 
     @classmethod
-    def get_module_class(cls, _backend):
-        SystemInfo = _backend.get_module("SystemInfo")
-        if SystemInfo.type == "linux" or SystemInfo.type.endswith("bsd"):
+    def get_module_class(cls, host):
+        if (host.system_info.type == "linux"
+                or host.system_info.type.endswith("bsd")):
             return PosixProcess
         else:
             raise NotImplementedError

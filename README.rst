@@ -25,24 +25,26 @@ Install testinfra using pip::
     $ pip install 'git+https://github.com/philpep/testinfra@master#egg=testinfra'
 
 
-Write your first tests file to `test_myinfra.py`::
+Write your first tests file to `test_myinfra.py`:
 
-    def test_passwd_file(File):
-        passwd = File("/etc/passwd")
+.. code-block:: python
+
+    def test_passwd_file(host):
+        passwd = host.file("/etc/passwd")
         assert passwd.contains("root")
         assert passwd.user == "root"
         assert passwd.group == "root"
         assert passwd.mode == 0o644
 
 
-    def test_nginx_is_installed(Package):
-        nginx = Package("nginx")
+    def test_nginx_is_installed(host):
+        nginx = host.package("nginx")
         assert nginx.is_installed
         assert nginx.version.startswith("1.2")
 
 
-    def test_nginx_running_and_enabled(Service):
-        nginx = Service("nginx")
+    def test_nginx_running_and_enabled(host):
+        nginx = host.service("nginx")
         assert nginx.is_running
         assert nginx.is_enabled
 

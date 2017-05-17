@@ -13,30 +13,36 @@
 
 from __future__ import unicode_literals
 
-from testinfra.modules.ansible import Ansible
-from testinfra.modules.command import Command
-from testinfra.modules.file import File
-from testinfra.modules.group import Group
-from testinfra.modules.interface import Interface
-from testinfra.modules.mountpoint import MountPoint
-from testinfra.modules.package import Package
-from testinfra.modules.pip import PipPackage
-from testinfra.modules.process import Process
-from testinfra.modules.puppet import Facter
-from testinfra.modules.puppet import PuppetResource
-from testinfra.modules.salt import Salt
-from testinfra.modules.service import Service
-from testinfra.modules.socket import Socket
-from testinfra.modules.sudo import Sudo
-from testinfra.modules.supervisor import Supervisor
-from testinfra.modules.sysctl import Sysctl
-from testinfra.modules.systeminfo import SystemInfo
-from testinfra.modules.user import User
+import importlib
+
+import testinfra.utils
+
+modules = {
+    'ansible': 'ansible:Ansible',
+    'command': 'command:Command',
+    'file': 'file:File',
+    'group': 'group:Group',
+    'interface': 'interface:Interface',
+    'mount_point': 'mountpoint:MountPoint',
+    'package': 'package:Package',
+    'pip_package': 'pip:PipPackage',
+    'process': 'process:Process',
+    'puppet_resource': 'puppet:PuppetResource',
+    'facter': 'puppet:Facter',
+    'salt': 'salt:Salt',
+    'service': 'service:Service',
+    'socket': 'socket:Socket',
+    'sudo': 'sudo:Sudo',
+    'supervisor': 'supervisor:Supervisor',
+    'sysctl': 'sysctl:Sysctl',
+    'system_info': 'systeminfo:SystemInfo',
+    'user': 'user:User',
+}
 
 
-__all__ = [
-    "Command", "File", "Package", "Group", "Interface",
-    "Service", "SystemInfo", "User", "Salt", "PuppetResource",
-    "Facter", "Sysctl", "Socket", "Ansible", "Process",
-    "Supervisor", "MountPoint", "Sudo", "PipPackage",
-]
+def get_module_class(name):
+    name = testinfra.utils.un_camel_case(name)
+    modname, classname = modules[name].split(':')
+    modname = '.'.join([__name__, modname])
+    module = importlib.import_module(modname)
+    return getattr(module, classname)

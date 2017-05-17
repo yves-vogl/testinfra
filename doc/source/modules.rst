@@ -3,63 +3,117 @@
 Modules
 =======
 
-Testinfra modules are provided as `pytest fixtures`_, declare them as
-arguments of your test function to make them available::
+Testinfra modules are provided through the `host` `fixture`_, declare it as
+arguments of your test function to make it available within it.
 
-    def test_foo(Package, File, Command):
-        [...]
+.. code-block:: python
 
-
-Note that you can also :ref:`make modules`.
-
-Command
-~~~~~~~
-
-.. autoclass:: testinfra.modules.Command(command, *args)
-   :members: check_output, run_expect, run_test, exists
+    def test_foo(host):
+        # [...]
 
 
-LocalCommand
-~~~~~~~~~~~~
-
-
-.. autofunction:: testinfra.plugin.LocalCommand(command, *args)
-
-
-TestinfraBackend
-~~~~~~~~~~~~~~~~
-
-.. autoclass:: testinfra.backend.base.BaseBackend()
-   :members:
-
-
-Sudo
+host
 ~~~~
 
-.. autoclass:: testinfra.modules.Sudo(user=None)
+.. autoclass:: testinfra.host.Host
+   :members:
+   :member-order: run
+
+    .. attribute:: ansible
+
+       :class:`testinfra.modules.ansible.Ansible` class
+
+    .. attribute:: file
+
+       :class:`testinfra.modules.file.File` class
+
+    .. attribute:: group
+
+       :class:`testinfra.modules.group.Group` class
+
+    .. attribute:: interface
+
+       :class:`testinfra.modules.interface.Interface` class
+
+    .. attribute:: mount_point
+
+       :class:`testinfra.modules.mountpoint.MountPoint` class
+
+    .. attribute:: package
+
+       :class:`testinfra.modules.package.Package` class
+
+    .. attribute:: pip_package
+
+       :class:`testinfra.modules.pip.PipPackage` class
+
+    .. attribute:: process
+
+       :class:`testinfra.modules.process.Process` class
+
+    .. attribute:: puppet_resource
+
+       :class:`testinfra.modules.puppet.PuppetResource` class
+
+    .. attribute:: facter
+
+       :class:`testinfra.modules.puppet.Facter` class
+
+    .. attribute:: salt
+
+       :class:`testinfra.modules.salt.Salt` class
+
+    .. attribute:: service
+
+       :class:`testinfra.modules.service.Service` class
+
+    .. attribute:: socket
+
+       :class:`testinfra.modules.socket.Socket` class
+
+    .. attribute:: sudo
+
+       :class:`testinfra.modules.sudo.Sudo` class
+
+    .. attribute:: supervisor
+
+       :class:`testinfra.modules.supervisor.Supervisor` class
+
+    .. attribute:: sysctl
+
+       :class:`testinfra.modules.sysctl.Sysctl` class
+
+    .. attribute:: system_info
+
+       :class:`testinfra.modules.systeminfo.SystemInfo` class
+
+    .. attribute:: user
+
+       :class:`testinfra.modules.user.User` class
+
+
+
+
+Ansible
+~~~~~~~
+
+.. autoclass:: testinfra.modules.ansible.Ansible(module_name, module_args=None, check=True)
+   :members:
 
 
 File
 ~~~~
 
-.. autoclass:: testinfra.modules.File
+.. autoclass:: testinfra.modules.file.File
    :members:
    :undoc-members:
-   :exclude-members: as_fixture, get_module_class
-
-
-User
-~~~~
-
-.. autoclass:: testinfra.modules.User
-   :members:
-   :undoc-members:
+   :exclude-members: get_module_class
 
 
 Group
 ~~~~~
 
-.. autoclass:: testinfra.modules.Group
+.. autoclass:: testinfra.modules.group.Group
    :members:
    :undoc-members:
 
@@ -67,100 +121,108 @@ Group
 Interface
 ~~~~~~~~~
 
-.. autoclass:: testinfra.modules.Interface
+.. autoclass:: testinfra.modules.interface.Interface
    :members:
    :undoc-members:
    :exclude-members: get_module_class
 
 
+MountPoint
+~~~~~~~~~~
+
+.. autoclass:: testinfra.modules.mountpoint.MountPoint(path)
+   :members:
+
+
 Package
 ~~~~~~~
 
-.. autoclass:: testinfra.modules.Package
+.. autoclass:: testinfra.modules.package.Package
    :members:
 
 
 PipPackage
 ~~~~~~~~~~
 
-.. autoclass:: testinfra.modules.PipPackage
+.. autoclass:: testinfra.modules.pip.PipPackage
    :members:
+
 
 Process
 ~~~~~~~
 
-.. autoclass:: testinfra.modules.Process
-   :members:
-
-Service
-~~~~~~~
-
-.. autoclass:: testinfra.modules.Service
-   :members:
-
-
-Supervisor
-~~~~~~~~~~
-
-.. autoclass:: testinfra.modules.Supervisor
-   :members:
-
-
-Socket
-~~~~~~
-
-.. autoclass:: testinfra.modules.Socket
-   :members:
-
-
-SystemInfo
-~~~~~~~~~~
-
-
-.. autoclass:: testinfra.modules.SystemInfo
-   :members:
-
-
-Salt
-~~~~
-
-
-.. autoclass:: testinfra.modules.Salt(function, args=None)
-   :members:
-
-Ansible
-~~~~~~~
-
-.. autoclass:: testinfra.modules.Ansible(module_name, module_args=None, check=True)
+.. autoclass:: testinfra.modules.process.Process
    :members:
 
 
 PuppetResource
 ~~~~~~~~~~~~~~
 
-
-.. autoclass:: testinfra.modules.PuppetResource(type, name=None)
+.. autoclass:: testinfra.modules.puppet.PuppetResource(type, name=None)
    :members:
 
 
 Facter
 ~~~~~~
 
-
-.. autoclass:: testinfra.modules.Facter(*facts)
+.. autoclass:: testinfra.modules.puppet.Facter(*facts)
    :members:
+
+
+Salt
+~~~~
+
+.. autoclass:: testinfra.modules.salt.Salt(function, args=None)
+   :members:
+
+
+Service
+~~~~~~~
+
+.. autoclass:: testinfra.modules.service.Service
+   :members:
+
+
+Socket
+~~~~~~
+
+.. autoclass:: testinfra.modules.socket.Socket
+   :members:
+
+
+Sudo
+~~~~
+
+.. autoclass:: testinfra.modules.sudo.Sudo(user=None)
+
+
+Supervisor
+~~~~~~~~~~
+
+.. autoclass:: testinfra.modules.supervisor.Supervisor
+   :members:
+
 
 Sysctl
 ~~~~~~
 
-.. autoclass:: testinfra.modules.Sysctl(name)
+.. autoclass:: testinfra.modules.sysctl.Sysctl(name)
    :members:
 
 
-MountPoint
+SystemInfo
 ~~~~~~~~~~
 
-.. autoclass:: testinfra.modules.MountPoint(path)
+.. autoclass:: testinfra.modules.systeminfo.SystemInfo
    :members:
 
-.. _pytest fixtures: https://pytest.org/latest/fixture.html
+
+User
+~~~~
+
+.. autoclass:: testinfra.modules.user.User
+   :members:
+   :exclude-members: get_module_class
+
+
+.. _fixture: https://docs.pytest.org/en/latest/fixture.html#fixture

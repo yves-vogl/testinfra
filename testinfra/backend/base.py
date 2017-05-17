@@ -17,8 +17,10 @@ import locale
 import logging
 import pipes
 import subprocess
+import warnings
 
 import testinfra.modules
+import testinfra.utils
 
 logger = logging.getLogger("testinfra")
 
@@ -86,11 +88,14 @@ class BaseBackend(object):
 
     def __init__(self, hostname, sudo=False, sudo_user=None, *args, **kwargs):
         self._encoding = None
-        self._module_cache = {}
+        self._host = None
         self.hostname = hostname
         self.sudo = sudo
         self.sudo_user = sudo_user
         super(BaseBackend, self).__init__()
+
+    def set_host(self, host):
+        self._host = host
 
     @classmethod
     def get_connection_type(cls):
@@ -143,15 +148,13 @@ class BaseBackend(object):
     def quote(command, *args):
         if args:
             return command % tuple(pipes.quote(a) for a in args)
-        else:
-            return command
+        return command
 
     def get_sudo_command(self, command, sudo_user):
         if sudo_user is None:
             return self.quote("sudo /bin/sh -c %s", command)
-        else:
-            return self.quote(
-                "sudo -u %s /bin/sh -c %s", sudo_user, command)
+        return self.quote(
+            "sudo -u %s /bin/sh -c %s", sudo_user, command)
 
     def get_command(self, command, *args):
         command = self.quote(command, *args)
@@ -203,6 +206,9 @@ class BaseBackend(object):
             # Python is not installed, we hope the encoding to be the same as
             # local machine...
             encoding = locale.getpreferredencoding()
+        if encoding == "ANSI_X3.4-1968":
+            # Workaround defaut encoding ascii without LANG set
+            encoding = "UTF-8"
         return encoding
 
     @property
@@ -228,25 +234,14 @@ class BaseBackend(object):
         logger.info("RUN %s", result)
         return result
 
-    def __getattr__(self, attr):
-        return self.get_module(attr)
+    def __getattr__(self, name):
+        warnings.warn('get_module() is deprecated, use new host API',
+                      DeprecationWarning, stacklevel=2)
+        module = getattr(self._host, testinfra.utils.un_camel_case(name))
+        setattr(self, name, module)
+        return module
 
     def get_module(self, name):
-        """Return the testinfra module adapted to the current backend
-
-        ::
-
-            def test(Package):
-                [...]
-
-            # Is equivalent to
-            def test(TestinfraBackend):
-                Package = TestinfraBackend.get_module("Package")
-
-        """
-        try:
-            module = self._module_cache[name]
-        except KeyError:
-            module = getattr(testinfra.modules, name).get_module(self)
-            self._module_cache[name] = module
-        return module
+        warnings.warn('get_module() is deprecated, use new host API',
+                      DeprecationWarning, stacklevel=2)
+        return getattr(self, name)

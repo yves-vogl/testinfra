@@ -2,6 +2,30 @@
 Changelog
 =========
 
+1.6.1
+=====
+
+* Support ansible 2.3 with python 3 (#197)
+
+1.6.0
+=====
+
+* New 'host' fixture as a replacement for all other fixtures.
+  See https://testinfra.readthedocs.io/en/latest/modules.html#host
+  (Other fixtures are deprecated and will be removed in 2.0 release).
+
+
+1.5.5
+=====
+
+* backends: Fix ansible backend with ansible >= 2.3 (#195)
+
+1.5.4
+=====
+
+* backends: fallback to UTF-8 encoding when system encoding is ASCII.
+* Service: fix is_running() on systems using Upstart
+
 1.5.3
 =====
 

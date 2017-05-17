@@ -34,19 +34,18 @@ from testinfra.backend import parse_hostspec
 
 
 BASETESTDIR = os.path.abspath(os.path.dirname(__file__))
-BASEDIR = os.path.abspath(os.path.join(BASETESTDIR, os.pardir, os.pardir))
+BASEDIR = os.path.abspath(os.path.join(BASETESTDIR, os.pardir))
 _HAS_DOCKER = None
 
 # Use testinfra to get a handy function to run commands locally
-_Command = testinfra.get_backend("local://").get_module("Command")
-check_output = _Command.check_output
+local_host = testinfra.get_host('local://')
+check_output = local_host.check_output
 
 
 def has_docker():
     global _HAS_DOCKER
     if _HAS_DOCKER is None:
-        _HAS_DOCKER = _Command.exists("docker")
-    print(_HAS_DOCKER)
+        _HAS_DOCKER = local_host.exists("docker")
     return _HAS_DOCKER
 
 
@@ -145,7 +144,7 @@ initialize_container_fixtures()
 
 
 @pytest.fixture
-def TestinfraBackend(request, tmpdir_factory):
+def host(request, tmpdir_factory):
     if not has_docker():
         pytest.skip()
         return
@@ -191,9 +190,8 @@ def TestinfraBackend(request, tmpdir_factory):
             kw["ssh_config"] = str(ssh_config)
 
         # Wait ssh to be up
-        service = testinfra.get_backend(
-            docker_id, connection="docker"
-        ).get_module("Service")
+        service = testinfra.get_host(
+            docker_id, connection='docker').service
 
         if image in ("centos_7", "fedora"):
             service_name = "sshd"
@@ -208,18 +206,18 @@ def TestinfraBackend(request, tmpdir_factory):
     else:
         hostspec = host
 
-    backend = testinfra.get_backend(hostspec, **kw)
-    backend.get_hostname = lambda: image
-    return backend
+    host = testinfra.host.get_host(hostspec, **kw)
+    host.backend.get_hostname = lambda: image
+    return host
 
 
 @pytest.fixture
-def docker_image(TestinfraBackend):
-    return TestinfraBackend.get_hostname()
+def docker_image(host):
+    return host.backend.get_hostname()
 
 
 def pytest_generate_tests(metafunc):
-    if "TestinfraBackend" in metafunc.fixturenames:
+    if "host" in metafunc.fixturenames:
         marker = getattr(metafunc.function, "testinfra_hosts", None)
         if marker is not None:
             hosts = marker.args
@@ -227,7 +225,7 @@ def pytest_generate_tests(metafunc):
             # Default
             hosts = ["docker://debian_jessie"]
 
-        metafunc.parametrize("TestinfraBackend", hosts, indirect=True,
+        metafunc.parametrize("host", hosts, indirect=True,
                              scope="function")
 
 
@@ -236,7 +234,6 @@ def pytest_configure(config):
         return
 
     def build_image(build_failed, dockerfile, image, image_path):
-        print("BUILD", image)
         try:
             subprocess.check_call([
                 "docker", "build", "-f", dockerfile,
