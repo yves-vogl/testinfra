@@ -14,6 +14,7 @@
 from __future__ import unicode_literals
 
 import importlib
+import os
 
 from six.moves import urllib
 
@@ -26,6 +27,7 @@ BACKENDS = {
     'docker': 'testinfra.backend.docker.DockerBackend',
     'ansible': 'testinfra.backend.ansible.AnsibleBackend',
     'kubectl': 'testinfra.backend.kubectl.KubectlBackend',
+    'winrm': 'testinfra.backend.winrm.WinRMBackend',
 }
 
 
@@ -45,14 +47,17 @@ def parse_hostspec(hostspec):
         kw["connection"] = url.scheme
         host = url.netloc
         query = urllib.parse.parse_qs(url.query)
-        if query.get("sudo", ["false"])[0].lower() == "true":
-            kw["sudo"] = True
-        for key in (
-            "ssh_config", "ansible_inventory",
-            "sudo_user",
-        ):
+        for key in ('sudo', 'ssl', 'verify_ssl'):
+            if query.get(key, ['false'])[0].lower() == 'true':
+                kw[key] = True
+        for key in ("sudo_user",):
             if key in query:
                 kw[key] = query.get(key)[0]
+        for key in (
+            "ssh_config", "ansible_inventory", "ssh_identity_file",
+        ):
+            if key in query:
+                kw[key] = os.path.expanduser(query.get(key)[0])
     else:
         host = hostspec
     return host, kw

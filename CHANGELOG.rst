@@ -2,6 +2,49 @@
 Changelog
 =========
 
+1.8.0
+=====
+
+* Deprecate testinfra command (will be dropped in 2.0), use py.test instead #135
+* Handle --nagios option when using py.test command
+
+1.7.1
+=====
+
+* Support for ansible 2.4 (#249)
+
+1.7.0
+=====
+
+* Salt: allow specifiy config directory (#230)
+* Add a WinRM backend
+* Socket: ipv6 sockets can handle ipv4 clients (#234)
+* Service: Enhance upstart detection (#243)
+
+1.6.5
+=====
+
+* Service: add is_enabled() support for OpenBSD
+* Add ssh identity file option for paramiko and ssh backends
+* Expand tilde (~) to user home directory for ssh-config, ssh-identity-file and
+  ansible-inventory options
+
+1.6.4
+=====
+
+* Service: Allow to find 'service' command outside of $PATH #211
+* doc fixes
+
+1.6.3
+=====
+
+* Fix unwanted deprecation warning when running tests with pytest 3.1 #204
+
+1.6.2
+=====
+
+* Fix wheel package for 1.6.1
+
 1.6.1
 =====
 

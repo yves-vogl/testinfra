@@ -37,11 +37,14 @@ class IgnorePolicy(paramiko.MissingHostKeyPolicy):
 class ParamikoBackend(base.BaseBackend):
     NAME = "paramiko"
 
-    def __init__(self, hostspec, ssh_config=None, *args, **kwargs):
-        self.host, self.user, self.port = self.parse_hostspec(hostspec)
+    def __init__(
+            self, hostspec, ssh_config=None, ssh_identity_file=None,
+            *args, **kwargs):
+        self.host = self.parse_hostspec(hostspec)
         self.ssh_config = ssh_config
+        self.ssh_identity_file = ssh_identity_file
         self._client = None
-        super(ParamikoBackend, self).__init__(self.host, *args, **kwargs)
+        super(ParamikoBackend, self).__init__(self.host.name, *args, **kwargs)
 
     @property
     def client(self):
@@ -49,16 +52,16 @@ class ParamikoBackend(base.BaseBackend):
             client = paramiko.SSHClient()
             client.set_missing_host_key_policy(paramiko.WarningPolicy())
             cfg = {
-                "hostname": self.host,
-                "port": int(self.port) if self.port else 22,
-                "username": self.user,
+                "hostname": self.host.name,
+                "port": int(self.host.port) if self.host.port else 22,
+                "username": self.host.user,
             }
             if self.ssh_config:
                 ssh_config = paramiko.SSHConfig()
-                with open(os.path.expanduser(self.ssh_config)) as f:
+                with open(self.ssh_config) as f:
                     ssh_config.parse(f)
 
-                for key, value in ssh_config.lookup(self.host).items():
+                for key, value in ssh_config.lookup(self.host.name).items():
                     if key == "hostname":
                         cfg[key] = value
                     elif key == "user":
@@ -69,7 +72,8 @@ class ParamikoBackend(base.BaseBackend):
                         cfg["key_filename"] = os.path.expanduser(value[0])
                     elif key == "stricthostkeychecking" and value == "no":
                         client.set_missing_host_key_policy(IgnorePolicy())
-
+            if self.ssh_identity_file:
+                cfg["key_filename"] = self.ssh_identity_file
             client.connect(**cfg)
             self._client = client
         return self._client

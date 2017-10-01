@@ -38,7 +38,7 @@ def test_package(host, docker_image):
         "fedora": "7.",
         "ubuntu_trusty": "1:6.6",
         "ubuntu_xenial": "1:7.2",
-        "centos_7": "6.6",
+        "centos_7": "7.",
     }[docker_image]
     assert ssh.is_installed
     assert ssh.version.startswith(version)
@@ -105,11 +105,6 @@ def test_ssh_service(host, docker_image):
     ("salt-minion", False, False),
 ])
 def test_service(host, name, running, enabled):
-
-    if name == "ntp":
-        # Systemd say no but sysv say yes
-        assert host.run("systemctl is-enabled ntp").rc == 1
-
     service = host.service(name)
     assert service.is_running == running
     assert service.is_enabled == enabled
