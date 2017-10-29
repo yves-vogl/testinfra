@@ -16,20 +16,31 @@ from __future__ import unicode_literals
 import re
 
 from testinfra.modules.base import InstanceModule
+from testinfra.utils import cached_property
 
 
 class SystemInfo(InstanceModule):
     """Return system informations"""
 
-    def __init__(self):
-        self._sysinfo = None
-        super(SystemInfo, self).__init__()
-
-    @property
+    @cached_property
     def sysinfo(self):
-        if self._sysinfo is None:
-            self._sysinfo = self.get_system_info()
-        return self._sysinfo
+        sysinfo = {
+            "type": None,
+            "distribution": None,
+            "codename": None,
+            "release": None,
+        }
+        sysinfo["type"] = self.check_output("uname -s").lower()
+        if sysinfo["type"] == "linux":
+            sysinfo.update(**self._get_linux_sysinfo())
+        elif sysinfo["type"] == "darwin":
+            sysinfo.update(**self._get_darwin_sysinfo())
+        else:
+            # BSD
+            sysinfo["release"] = self.check_output("uname -r")
+            sysinfo["distribution"] = sysinfo["type"]
+            sysinfo["codename"] = None
+        return sysinfo
 
     def _get_linux_sysinfo(self):
         sysinfo = {}
@@ -93,25 +104,6 @@ class SystemInfo(InstanceModule):
 
         return sysinfo
 
-    def get_system_info(self):
-        sysinfo = {
-            "type": None,
-            "distribution": None,
-            "codename": None,
-            "release": None,
-        }
-        sysinfo["type"] = self.check_output("uname -s").lower()
-        if sysinfo["type"] == "linux":
-            sysinfo.update(**self._get_linux_sysinfo())
-        elif sysinfo["type"] == "darwin":
-            sysinfo.update(**self._get_darwin_sysinfo())
-        else:
-            # BSD
-            sysinfo["release"] = self.check_output("uname -r")
-            sysinfo["distribution"] = sysinfo["type"]
-            sysinfo["codename"] = None
-        return sysinfo
-
     @property
     def type(self):
         """OS type
@@ -147,23 +139,3 @@ class SystemInfo(InstanceModule):
         'wheezy'
         """
         return self.sysinfo["codename"]
-
-    @property
-    def user(self):
-        return self.check_output("id -nu")
-
-    @property
-    def uid(self):
-        return int(self.check_output("id -u"))
-
-    @property
-    def group(self):
-        return self.check_output("id -ng")
-
-    @property
-    def gid(self):
-        return int(self.check_output("id -g"))
-
-    @property
-    def hostname(self):
-        return self.check_output("hostname -s")
