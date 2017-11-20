@@ -1,31 +1,19 @@
 #!/usr/bin/make -f
 
-PYTHONS:=$(shell pyversions -vr)
-PYTHON3S:=$(shell py3versions -vr)
-
 DEBVERS ?= $(shell dpkg-parsechangelog | sed -n -e 's/^Version: //p')
 VERSION ?= $(shell echo '$(DEBVERS)' | sed -e 's/^[[:digit:]]*://' -e 's/[-].*//')
 export PBR_VERSION=$(VERSION)
+export PYBUILD_DISABLE=test
+export PYBUILD_NAME=testinfra
 
 %:
-	dh $@ --buildsystem=python_distutils --with python2,python3,sphinxdoc
-
+	dh $@ --buildsystem=pybuild --with python2,python3,sphinxdoc
 
 override_dh_auto_install:
-	set -e && for pyvers in $(PYTHONS); do \
-		python$$pyvers setup.py install --install-layout=deb \
-			--root $(CURDIR)/debian/python-testinfra; \
-	done
-	PYTHONPATH=$(CURDIR)/debian/python-testinfra/usr/lib/python2.7/dist-packages sphinx-build -b man doc/source $(CURDIR)/debian/python-testinfra/usr/share/man/man1
-	rm -rf $(CURDIR)/debian/python-testinfra/usr/share/man/man1/.doctrees
-	set -e && for pyvers in $(PYTHON3S); do \
-		python$$pyvers setup.py install --install-layout=deb \
-			--root $(CURDIR)/debian/python3-testinfra; \
-	done
+	dh_auto_install
 	rm -rf $(CURDIR)/debian/python3-testinfra/usr/bin
+	rm -rf $(CURDIR)/debian/python-testinfra/usr/bin
 
 override_dh_sphinxdoc:
-ifeq (,$(findstring nodocs, $(DEB_BUILD_OPTIONS)))
 	PYTHONPATH=$(CURDIR)/debian/python-testinfra/usr/lib/python2.7/dist-packages sphinx-build -b html doc/source $(CURDIR)/debian/python-testinfra-doc/usr/share/doc/python-testinfra-doc/html
-	dh_sphinxdoc -O --buildsystem=python_distutils
-endif
+	dh_sphinxdoc -O --buildsystem=pybuild

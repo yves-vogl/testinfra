@@ -4,6 +4,7 @@ Section: python
 Priority: optional
 Build-Depends:
     debhelper (>= 9),
+    dh-python,
     python-all,
     python3-all,
     python-setuptools,
@@ -19,7 +20,7 @@ Build-Depends:
 Homepage: https://github.com/philpep/testinfra
 Vcs-Browser: https://github.com/philpep/testinfra
 Vcs-Git: git://github.com/philpep/testinfra
-Standards-Version: 3.9.6
+Standards-Version: 3.9.8
 
 Package: python-testinfra
 Architecture: all
