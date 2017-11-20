@@ -1,3 +1,11 @@
+testinfra (1.9.0-2) unstable; urgency=medium
+
+  * drop deprecated /usr/bin/testinfra
+  * switch to pybuild and Standards-Version: 3.9.8
+  * add debian/watch file
+
+ -- Philippe Pepiot <phil@philpep.org>  Mon, 20 Nov 2017 23:21:27 +0100
+
 testinfra (1.9.0-1) unstable; urgency=medium
 
   * New upstream release
