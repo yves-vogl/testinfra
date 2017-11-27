@@ -5,6 +5,11 @@ Changelog
 1.10.0
 ======
 
+* New iptables module
+
+1.9.1
+=====
+
 * Fix running testinfra within a suite using doctest (#268)
 * Service: add is_valid method for systemd
 * Fix file.linked_to() for Mac OS
